@@ -118,7 +118,7 @@ Rick Corey`,
                     <img
                       src={`/assets/about/${image.filename}`}
                       alt={image.title}
-                      className="w-full h-64 object-cover"
+                      className="w-full h-80 object-cover"
                     />
                   </motion.div>
                 ))

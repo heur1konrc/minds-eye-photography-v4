@@ -4,96 +4,209 @@ import { motion } from 'framer-motion'
 import Logo from '../components/Logo'
 
 const HomePage = () => {
-  const [backgroundImage, setBackgroundImage] = useState(null);
+  const [slideshowImages, setSlideshowImages] = useState([]);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [slideshowSettings, setSlideshowSettings] = useState({
+    transition_duration: 5000,
+    fade_duration: 1000,
+    auto_play: true,
+    pause_on_hover: true
+  });
   const [loading, setLoading] = useState(true);
+  const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
-    const fetchBackground = async () => {
+    const fetchSlideshowData = async () => {
       try {
-        const response = await fetch('https://minds-eye-master-production.up.railway.app/api/background');
-        const data = await response.json();
+        // Create logo slide as permanent first slide
+        const logoSlide = {
+          id: 'logo-slide',
+          filename: 'logo-slide.png',
+          title: "Mind's Eye Photography",
+          url: '/logo-slide.png'
+        };
+
+        // Fetch slideshow images from the correct endpoint
+        const slideshowResponse = await fetch('https://minds-eye-master-production.up.railway.app/api/slideshow-images');
+        const slideshowData = await slideshowResponse.json();
         
-        console.log('Background API response:', data);
+        console.log('Slideshow data:', slideshowData);
         
-        if (data.background_url) {
-          setBackgroundImage(data.background_url);
-          console.log('✅ Background set to:', data.background_url);
-        } else if (data.background_image) {
-          // Handle different API response format
-          const fullUrl = `https://minds-eye-master-production.up.railway.app/static/assets/${data.background_image}`;
-          setBackgroundImage(fullUrl);
-          console.log('✅ Background set to:', fullUrl);
+        if (slideshowData.success && slideshowData.images.length > 0) {
+          // Combine logo slide + photography slides
+          const allSlides = [logoSlide, ...slideshowData.images];
+          setSlideshowImages(allSlides);
+          console.log('✅ Slideshow with logo loaded:', allSlides.length, 'slides');
         } else {
-          console.error('❌ No background image available from database');
+          // Fallback to single background if no slideshow configured
+          const fallbackResponse = await fetch('https://minds-eye-master-production.up.railway.app/api/background');
+          const fallbackData = await fallbackResponse.json();
+          
+          if (fallbackData.background_url || fallbackData.background_image) {
+            const imageUrl = fallbackData.background_url || 
+              `https://minds-eye-master-production.up.railway.app/static/assets/${fallbackData.background_image}`;
+            const fallbackSlides = [
+              logoSlide,
+              {
+                id: 1,
+                filename: fallbackData.background_image || 'default.jpg',
+                title: 'Background Image',
+                url: imageUrl
+              }
+            ];
+            setSlideshowImages(fallbackSlides);
+          } else {
+            // Just logo slide if no other images
+            setSlideshowImages([logoSlide]);
+          }
         }
+        
         setLoading(false);
       } catch (error) {
-        console.error('❌ Error fetching background:', error);
+        console.error('❌ Error fetching slideshow data:', error);
+        // Fallback to just logo slide on error
+        setSlideshowImages([{
+          id: 'logo-slide',
+          filename: 'logo-slide.png',
+          title: "Mind's Eye Photography",
+          url: '/logo-slide.png'
+        }]);
         setLoading(false);
       }
     };
 
-    fetchBackground();
+    fetchSlideshowData();
   }, []);
+
+  // Slideshow auto-advance effect
+  useEffect(() => {
+    if (!slideshowSettings.auto_play || isPaused || slideshowImages.length <= 1) {
+      return;
+    }
+
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prevIndex) => 
+        (prevIndex + 1) % slideshowImages.length
+      );
+    }, slideshowSettings.transition_duration);
+
+    return () => clearInterval(interval);
+  }, [slideshowImages.length, slideshowSettings.transition_duration, slideshowSettings.auto_play, isPaused]);
+
+  const handleMouseEnter = () => {
+    if (slideshowSettings.pause_on_hover) {
+      setIsPaused(true);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (slideshowSettings.pause_on_hover) {
+      setIsPaused(false);
+    }
+  };
 
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-900 flex items-center justify-center">
-        <div className="text-white text-xl">Loading background...</div>
+        <div className="text-white text-xl">Loading slideshow...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
-      {/* Dynamic Background from Background Manager - NO OVERLAY */}
-      <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{
-          backgroundImage: backgroundImage ? `url('${backgroundImage}')` : 'linear-gradient(135deg, #1e293b 0%, #334155 100%)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat'
-        }}
-      />
-      
-      {/* Debug info */}
-      {!backgroundImage && (
-        <div className="absolute top-4 left-4 bg-red-600 text-white p-2 rounded text-sm z-50">
-          ❌ No background image loaded
-        </div>
-      )}
-      
-      {/* Hero Content - LOGO + TAGLINE */}
-      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen text-center px-6">
+    <div 
+      className="min-h-screen relative overflow-hidden pt-20"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      {/* Slideshow Background Images - SIMPLE IMG APPROACH */}
+      <div className="absolute inset-0">
+        {slideshowImages.map((image, index) => (
+          <img
+            key={image.id || index}
+            src={image.url}
+            alt={image.title || 'Slideshow Image'}
+            className="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000"
+            style={{
+              opacity: index === currentImageIndex ? 1 : 0,
+              zIndex: index === currentImageIndex ? 5 : 1
+            }}
+            onLoad={() => console.log(`✅ Image ${index + 1} loaded:`, image.url)}
+            onError={(e) => console.error(`❌ Image ${index + 1} failed:`, image.url, e)}
+          />
+        ))}
         
-        {/* MIND'S EYE LOGO - NO ANIMATION */}
-        <div className="mb-2">
-          <div className="w-80 h-80 md:w-96 md:h-96 lg:w-[500px] lg:h-[500px] xl:w-[600px] xl:h-[600px]">
-            <Logo size="massive" className="w-full h-full" />
+        {/* Subtle overlay for text readability - Behind images */}
+        <div className="absolute inset-0 bg-black bg-opacity-20" style={{zIndex: -1}}></div>
+      </div>
+
+      {/* Corner Logo and Tagline - TEMPORARILY REMOVED FOR TESTING */}
+      {/*
+      <div className="absolute top-6 left-6 z-10">
+        <motion.div
+          initial={{ opacity: 0, x: -50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 1, delay: 0.5 }}
+          className="bg-black bg-opacity-40 backdrop-blur-sm rounded-lg p-4"
+        >
+          <div className="flex flex-col items-start">
+            <Logo className="h-20 w-auto mb-2" />
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1, delay: 1 }}
+              className="text-white text-sm font-light tracking-wide"
+            >
+              Where Moments Meet Imagination
+            </motion.p>
+          </div>
+        </motion.div>
+      </div>
+      */}
+
+      {/* Navigation Menu - Top Right - REMOVED FOR CLEAN DESIGN */}
+
+      {/* Center Content - Minimal and Elegant */}
+      {/* View Portfolio Button - Bottom Right Corner */}
+      <div className="absolute bottom-6 right-6 z-10">
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, delay: 1.5 }}
+          className="flex flex-col items-center justify-center text-center"
+        >
+          <Link
+            to="/portfolio"
+            className="inline-block bg-orange-500 hover:bg-orange-600 text-white font-semibold py-4 px-8 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg"
+          >
+            View Portfolio
+          </Link>
+        </motion.div>
+      </div>
+
+      {/* Slideshow Indicators - Bottom Center */}
+      {slideshowImages.length > 1 && (
+        <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-10">
+          <div className="flex space-x-2">
+            {slideshowImages.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentImageIndex(index)}
+                className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                  index === currentImageIndex 
+                    ? 'bg-orange-500 scale-125' 
+                    : 'bg-white bg-opacity-50 hover:bg-opacity-75'
+                }`}
+              />
+            ))}
           </div>
         </div>
-        
-        {/* TAGLINE - SIZED TO MATCH LOGO TEXT */}
-        <h3 
-          className="text-lg md:text-xl lg:text-2xl xl:text-3xl text-white font-bold mb-16 tracking-wide max-w-4xl drop-shadow-lg"
-          style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif' }}
-        >
-          Where Moments Meet Imagination
-        </h3>
-        
-        {/* VIEW PORTFOLIO BUTTON */}
-        <div>
-          <Link to="/portfolio">
-            <button className="bg-orange-500 hover:bg-orange-600 text-white text-sm md:text-base lg:text-lg font-semibold px-6 py-3 md:px-8 md:py-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border border-orange-400">
-              View Portfolio
-            </button>
-          </Link>
-        </div>
-      </div>
-    </div>
-  )
-}
+      )}
 
-export default HomePage
+      {/* Slideshow Info - Bottom Left - REMOVED FOR CLEAN DESIGN */}
+    </div>
+  );
+};
+
+export default HomePage;
 

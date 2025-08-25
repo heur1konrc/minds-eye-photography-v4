@@ -7,6 +7,32 @@ const FeaturedPage = () => {
   const [error, setError] = useState(null)
   const [showFullscreen, setShowFullscreen] = useState(false)
 
+  // Format date to mm/dd/year hh:mm AM/PM
+  const formatExifDate = (dateString) => {
+    if (!dateString || dateString === 'Unknown') return 'Unknown';
+    
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return dateString; // Return original if invalid
+      
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const year = date.getFullYear();
+      
+      let hours = date.getHours();
+      const minutes = String(date.getMinutes()).padStart(2, '0');
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      
+      hours = hours % 12;
+      hours = hours ? hours : 12; // 0 should be 12
+      const formattedHours = String(hours).padStart(2, '0');
+      
+      return `${month}/${day}/${year} ${formattedHours}:${minutes} ${ampm}`;
+    } catch (error) {
+      return dateString; // Return original if formatting fails
+    }
+  };
+
   useEffect(() => {
     const fetchFeaturedImage = async () => {
       try {
@@ -155,7 +181,7 @@ const FeaturedPage = () => {
                 {exif.date_taken && exif.date_taken !== 'Unknown' && (
                   <div className="flex justify-between">
                     <span className="text-slate-400">Date:</span>
-                    <span className="text-right text-sm">{exif.date_taken}</span>
+                    <span className="text-right text-sm">{formatExifDate(exif.date_taken)}</span>
                   </div>
                 )}
               </div>

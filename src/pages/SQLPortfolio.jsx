@@ -145,7 +145,7 @@ const SQLPortfolio = () => {
                   key={image.id || index}
                   className="group bg-slate-700 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
                 >
-                  <div className="aspect-square relative overflow-hidden">
+                  <div className="aspect-[3/2] relative overflow-hidden">
                     <img
                       src={image.url}
                       alt={cleanTitle(image.title)}
@@ -154,23 +154,20 @@ const SQLPortfolio = () => {
                         e.target.src = '/placeholder-image.jpg';
                       }}
                     />
-                    {image.categories && image.categories.length > 0 && (
-                      <div className="absolute top-2 right-2">
-                        <span className="bg-orange-500 text-white text-xs px-2 py-1 rounded-full">
-                          {image.categories[0]}
-                        </span>
-                      </div>
-                    )}
                   </div>
                   
                   <div className="p-4">
                     <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-orange-400 transition-colors">
                       {cleanTitle(image.title)}
                     </h3>
-                    {image.description && (
-                      <p className="text-sm text-slate-400 line-clamp-2">
-                        {cleanDescription(image.description)}
-                      </p>
+                    {image.categories && image.categories.length > 0 && (
+                      <div className="flex flex-wrap gap-2">
+                        {image.categories.map((category, idx) => (
+                          <span key={idx} className="bg-orange-500 text-white text-xs px-2 py-1 rounded-full">
+                            {category}
+                          </span>
+                        ))}
+                      </div>
                     )}
                   </div>
                 </div>

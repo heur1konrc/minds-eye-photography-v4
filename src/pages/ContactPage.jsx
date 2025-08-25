@@ -8,28 +8,45 @@ const ContactPage = () => {
     name: '',
     email: '',
     phone: '',
-    eventDate: '',
-    photographyType: '',
-    budgetRange: '',
-    projectDescription: '',
-    howDidYouHear: ''
+    photography_type: '',
+    message: ''
   })
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitMessage, setSubmitMessage] = useState('')
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    // Handle form submission here
-    console.log('Form submitted:', formData)
-    alert('Thank you for your inquiry! I\'ll get back to you soon.')
-    setFormData({ 
-      name: '', 
-      email: '', 
-      phone: '', 
-      eventDate: '', 
-      photographyType: '', 
-      budgetRange: '', 
-      projectDescription: '', 
-      howDidYouHear: '' 
-    })
+    setIsSubmitting(true)
+    setSubmitMessage('')
+    
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+      })
+      
+      const result = await response.json()
+      
+      if (result.success) {
+        setSubmitMessage('Thank you for your message! We will get back to you soon.')
+        setFormData({ 
+          name: '', 
+          email: '', 
+          phone: '', 
+          photography_type: '', 
+          message: '' 
+        })
+      } else {
+        setSubmitMessage(result.error || 'An error occurred. Please try again.')
+      }
+    } catch (error) {
+      setSubmitMessage('Network error. Please contact us directly at info@themindseyestudio.com')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const handleChange = (e) => {

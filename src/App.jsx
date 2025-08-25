@@ -10,12 +10,14 @@ import SQLPortfolio from './pages/SQLPortfolio'
 import FeaturedPage from './pages/FeaturedPage'
 import AboutPage from './pages/AboutPage'
 import ContactPage from './pages/ContactPage'
+import CopyrightProtection from './components/CopyrightProtection'
 import './App.css'
 
 function App() {
   return (
     <Router>
       <div className="min-h-screen bg-gray-50">
+        <CopyrightProtection />
         <Navigation />
         <Routes>
           <Route path="/" element={<HomePage />} />

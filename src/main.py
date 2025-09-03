@@ -42,7 +42,7 @@ CORS(app, origins="*", methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
 os.makedirs(PHOTOGRAPHY_ASSETS_DIR, exist_ok=True)
 
 app.register_blueprint(user_bp, url_prefix='/api')
-app.register_blueprint(contact_bp)
+app.register_blueprint(contact_bp, url_prefix='/')
 app.register_blueprint(admin_bp)
 app.register_blueprint(background_bp)
 app.register_blueprint(featured_bp)

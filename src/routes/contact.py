@@ -12,7 +12,7 @@ contact_bp = Blueprint('contact', __name__)
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-@contact_bp.route('/contact', methods=['POST'])
+@contact_bp.route('/api/contact', methods=['POST'])
 def handle_contact():
     """Handle contact form submissions with Google Workspace SMTP"""
     try:
@@ -23,13 +23,13 @@ def handle_contact():
         phone = data.get('phone', '')
         email = data.get('email', '')
         event_date = data.get('eventDate', '')
-        shoot_type = data.get('shootType', '')
+        shoot_type = data.get('photography_type', '')  # Match frontend field name
         budget = data.get('budget', '')
-        additional_info = data.get('additionalInfo', '')
+        additional_info = data.get('message', '')  # Match frontend field name
         
         # Validate required fields
         if not name or not email:
-            return jsonify({'error': 'Name and email are required'}), 400
+            return jsonify({'success': False, 'error': 'Name and email are required'}), 400
         
         # Create email content
         subject = f"New Photography Inquiry from {name}"
@@ -59,9 +59,9 @@ Reply directly to this email to respond to the client.
             smtp_server = "smtp.gmail.com"
             smtp_port = 587
             smtp_login = "rick@themindseyestudio.com"  # Google account for SMTP login
-            sender_password = "dvke joyj ydge qcma"  # New app-specific password
+            sender_password = "dvke joyj ydge qcma"  # App-specific password
             sender_email = "info@themindseyestudio.com"  # Display address
-            recipient_email = "info@themindseyestudio.com"  # Email for receiving
+            recipient_email = "rick@themindseyestudio.com"  # Email for receiving
             
             # Create message
             msg = MIMEMultipart()
@@ -80,14 +80,13 @@ Reply directly to this email to respond to the client.
             server.quit()
             
             logger.info(f"Email sent successfully for inquiry from {name} ({email})")
-            return jsonify({'message': 'Thank you for your inquiry! I will get back to you soon.'}), 200
+            return jsonify({'success': True, 'message': 'Thank you for your inquiry! I will get back to you soon.'}), 200
             
         except Exception as email_error:
             logger.error(f"Failed to send email: {str(email_error)}")
-            # Still return success to user, but log the error
-            return jsonify({'message': 'Thank you for your inquiry! I will get back to you soon.'}), 200
+            return jsonify({'success': False, 'error': f'Failed to send email: {str(email_error)}'}), 500
             
     except Exception as e:
         logger.error(f"Contact form error: {str(e)}")
-        return jsonify({'error': 'Sorry, there was an error processing your request.'}), 500
+        return jsonify({'success': False, 'error': 'Sorry, there was an error processing your request.'}), 500
 

@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mind's Eye Photography - Professional Photography Studio</title>
+    
+    <!-- Open Graph Meta Tags for Social Media Sharing -->
+    <meta property="og:title" content="Mind's Eye Photography - Where Moments Meet Imagination" />
+    <meta property="og:description" content="Professional photography services in Madison, WI. Specializing in landscapes, nature, portraits, events, corporate, band promotions, products, and real estate photography." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://minds-eye-recovery-repo-production.up.railway.app" />
+    <meta property="og:image" content="https://minds-eye-recovery-repo-production.up.railway.app/api/featured-image-og" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:site_name" content="Mind's Eye Photography" />
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Mind's Eye Photography - Where Moments Meet Imagination" />
+    <meta name="twitter:description" content="Professional photography services in Madison, WI. Capturing moments that spark imagination." />
+    <meta name="twitter:image" content="https://minds-eye-recovery-repo-production.up.railway.app/api/featured-image-og" />
+    
+    <!-- General Meta Tags -->
+    <meta name="description" content="Professional photography services in Madison, WI. Specializing in landscapes, nature, portraits, events, corporate, band promotions, products, and real estate photography." />
+    <meta name="keywords" content="photography, Madison WI, professional photographer, landscape photography, nature photography, portrait photography, event photography, corporate photography, band promotions, product photography, real estate photography" />
+    <meta name="author" content="Rick Corey - Mind's Eye Photography" />
+    <script type="module" crossorigin src="/assets/index-nB22yC_5.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-C_fBTKFZ.css">
+  </head>
+  <body>
+    <div id="root"></div>
+    <script>
+      // Aggressive navigation fix - run immediately and repeatedly
+      function fixNavigation() {
+        const nav = document.querySelector('nav .hidden.md\\:flex');
+        if (nav) {
+          const aboutLink = Array.from(nav.querySelectorAll('a')).find(a => a.textContent.trim() === 'About');
+          if (aboutLink) {
+            aboutLink.remove();
+            const contactLink = Array.from(nav.querySelectorAll('a')).find(a => a.textContent.trim() === 'Contact');
+            if (contactLink) {
+              const infoLink = document.createElement('a');
+              infoLink.href = '/about-minds-eye';
+              infoLink.textContent = 'Info';
+              infoLink.className = 'text-white hover:text-orange-400 transition-colors';
+              infoLink.onclick = function(e) {
+                e.preventDefault();
+                window.location.href = '/about-minds-eye';
+              };
+              contactLink.parentNode.insertBefore(infoLink, contactLink);
+            }
+          }
+        }
+      }
+      
+      // Run immediately
+      fixNavigation();
+      
+      // Run after DOM loads
+      document.addEventListener('DOMContentLoaded', fixNavigation);
+      
+      // Run after window loads
+      window.addEventListener('load', fixNavigation);
+      
+      // Run repeatedly to catch React renders
+      setInterval(fixNavigation, 500);
+      
+      // Watch for DOM changes
+      const observer = new MutationObserver(fixNavigation);
+      observer.observe(document.body, { childList: true, subtree: true });
+    </script>
+  </body>
+</html>

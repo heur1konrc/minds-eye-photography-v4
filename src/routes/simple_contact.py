@@ -194,7 +194,11 @@ CONTACT_FORM_HTML = """
         </form>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script>
+        // Initialize EmailJS
+        emailjs.init("YOUR_PUBLIC_KEY"); // Will be replaced with actual key
+        
         document.getElementById('contactForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -219,24 +223,30 @@ CONTACT_FORM_HTML = """
             };
             
             try {
-                const response = await fetch('/simple-contact', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(formData)
-                });
+                // Send email using EmailJS (bypasses server SMTP blocking)
+                const result = await emailjs.send(
+                    'service_gmail', // Service ID
+                    'template_contact', // Template ID  
+                    {
+                        to_email: 'info@themindseyestudio.com',
+                        from_name: formData.name,
+                        from_email: formData.email,
+                        phone: formData.phone,
+                        event_date: formData.event_date,
+                        photography_type: formData.photography_type,
+                        budget: formData.budget,
+                        message: formData.message,
+                        referral: formData.referral,
+                        subject: `New Photography Inquiry from ${formData.name}`
+                    }
+                );
                 
-                const result = await response.json();
+                messageDiv.innerHTML = '<div class="message success">Thank you for your inquiry! Rick will get back to you soon.</div>';
+                document.getElementById('contactForm').reset();
                 
-                if (result.success) {
-                    messageDiv.innerHTML = '<div class="message success">' + result.message + '</div>';
-                    document.getElementById('contactForm').reset();
-                } else {
-                    messageDiv.innerHTML = '<div class="message error">' + (result.error || 'An error occurred. Please try again.') + '</div>';
-                }
             } catch (error) {
-                messageDiv.innerHTML = '<div class="message error">Network error. Please contact us directly at rick@themindseyestudio.com</div>';
+                console.error('EmailJS error:', error);
+                messageDiv.innerHTML = '<div class="message error">Sorry, there was an error sending your message. Please email info@themindseyestudio.com directly.</div>';
             }
             
             // Re-enable button
@@ -296,34 +306,41 @@ Submitted on: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
 Reply directly to this email to respond to the client.
         """
         
-        # Send email using simple HTTP service (no SMTP blocking)
+        # Send email using Resend API (Railway's recommended approach)
         try:
-            # Use httpbin.org to test HTTP email sending
-            email_data = {
-                'to': 'rick@themindseyestudio.com',
-                'from': 'rick@rickcorey.com',
-                'subject': f"New Photography Inquiry from {name}",
-                'text': body
+            resend_url = "https://api.resend.com/emails"
+            headers = {
+                "Authorization": "Bearer re_PPE8BC23_8JWToUtMTfd9FdHdExfZ7gwj",
+                "Content-Type": "application/json"
             }
             
-            # For now, just log the email and return success
-            # This bypasses SMTP blocking issues
-            logger.info(f"Email would be sent to rick@themindseyestudio.com:")
-            logger.info(f"Subject: {email_data['subject']}")
-            logger.info(f"Body: {body}")
+            email_payload = {
+                "from": "contact@resend.dev",  # Resend's default sender
+                "to": ["info@themindseyestudio.com"],
+                "subject": subject,
+                "text": body
+            }
             
-            # Simulate successful email sending
-            logger.info(f"Email sent successfully for inquiry from {name} ({email})")
-            return jsonify({
-                'success': True, 
-                'message': 'Thank you for your inquiry! Rick will get back to you soon. (Email logged to server)'
-            }), 200
+            response = requests.post(resend_url, headers=headers, json=email_payload)
             
+            if response.status_code == 200:
+                logger.info(f"Email sent successfully via Resend for inquiry from {name} ({email})")
+                return jsonify({
+                    'success': True, 
+                    'message': 'Thank you for your inquiry! Rick will get back to you soon.'
+                }), 200
+            else:
+                logger.error(f"Resend API error: {response.status_code} - {response.text}")
+                return jsonify({
+                    'success': False, 
+                    'error': f'Email service error. Please contact info@themindseyestudio.com directly.'
+                }), 500
+                
         except Exception as email_error:
-            logger.error(f"Failed to send email: {str(email_error)}")
+            logger.error(f"Failed to send email via Resend: {str(email_error)}")
             return jsonify({
                 'success': False, 
-                'error': f'Failed to send email. Please contact rick@themindseyestudio.com directly.'
+                'error': f'Failed to send email. Please contact info@themindseyestudio.com directly.'
             }), 500
             
     except Exception as e:

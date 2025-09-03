@@ -125,7 +125,7 @@ CONTACT_FORM_HTML = """
         
         <div class="contact-info">
             <h2>Get In Touch</h2>
-            <p><strong>Email:</strong> rick@themindseyestudio.com</p>
+            <p><strong>Email:</strong> info@themindseyestudio.com</p>
             <p><strong>Phone:</strong> 608-219-6066</p>
             <p><strong>Location:</strong> Based in Madison, WI but can travel within the state</p>
         </div>
@@ -146,6 +146,11 @@ CONTACT_FORM_HTML = """
             <div class="form-group">
                 <label for="phone">Phone</label>
                 <input type="tel" id="phone" name="phone">
+            </div>
+            
+            <div class="form-group">
+                <label for="event_date">Event Date</label>
+                <input type="date" id="event_date" name="event_date">
             </div>
             
             <div class="form-group">
@@ -179,6 +184,11 @@ CONTACT_FORM_HTML = """
                 <textarea id="message" name="message" placeholder="Tell us about your project..."></textarea>
             </div>
             
+            <div class="form-group">
+                <label for="referral">How did you hear about us?</label>
+                <input type="text" id="referral" name="referral" placeholder="Google, referral, social media, etc.">
+            </div>
+            
             <button type="submit" class="btn" id="submitBtn">Send Inquiry</button>
         </form>
     </div>
@@ -200,9 +210,11 @@ CONTACT_FORM_HTML = """
                 name: document.getElementById('name').value,
                 email: document.getElementById('email').value,
                 phone: document.getElementById('phone').value,
+                event_date: document.getElementById('event_date').value,
                 photography_type: document.getElementById('photography_type').value,
                 budget: document.getElementById('budget').value,
-                message: document.getElementById('message').value
+                message: document.getElementById('message').value,
+                referral: document.getElementById('referral').value
             };
             
             try {
@@ -250,9 +262,11 @@ def handle_simple_contact():
         name = data.get('name', '').strip()
         email = data.get('email', '').strip()
         phone = data.get('phone', '').strip()
+        event_date = data.get('event_date', '').strip()
         photography_type = data.get('photography_type', '').strip()
         budget = data.get('budget', '').strip()
         message = data.get('message', '').strip()
+        referral = data.get('referral', '').strip()
         
         # Validate required fields
         if not name or not email:
@@ -267,8 +281,10 @@ New photography inquiry received from Mind's Eye Photography website:
 Name: {name}
 Email: {email}
 Phone: {phone}
+Event Date: {event_date}
 Photography Type: {photography_type}
 Budget: {budget}
+How did you hear about us: {referral}
 
 Message:
 {message}
@@ -286,7 +302,7 @@ Reply directly to this email to respond to the client.
             smtp_port = 587
             smtp_login = "rick@themindseyestudio.com"
             smtp_password = "dvke joyj ydge qcma"
-            sender_email = "rick@themindseyestudio.com"
+            sender_email = "info@themindseyestudio.com"
             recipient_email = "rick@themindseyestudio.com"
             
             # Create message

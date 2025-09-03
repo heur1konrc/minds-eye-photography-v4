@@ -1,0 +1,74 @@
+SOURCE CODE BACKUP - 2025-09-02 23:48:41
+=================================================================
+
+CONTENTS:
+✅ Complete source code (Python Flask backend)
+✅ Complete frontend code (React)
+✅ All configuration files
+✅ Database file (mindseye.db)
+✅ Requirements and dependencies
+✅ nixpacks.toml configuration
+❌ Image files (excluded to reduce size)
+
+RESTORATION INSTRUCTIONS:
+1. Create new GitHub repository
+2. Extract this backup
+3. Push contents to new repository (see file structure below)
+4. Connect Railway to new repository
+5. Attach Railway volume for images (/data)
+
+EXACT FILE STRUCTURE FOR NEW REPOSITORY:
+minds-eye-photography/
+├── README.md                    (optional)
+├── requirements.txt             ✅ Python dependencies
+├── nixpacks.toml               ✅ Railway build configuration
+├── wsgi.py                     ✅ WSGI entry point
+├── mindseye.db                 ✅ Database file
+├── src/                        ✅ Flask backend
+│   ├── __init__.py
+│   ├── main.py                 ✅ Main Flask app
+│   ├── models.py               ✅ Database models
+│   ├── config.py               ✅ Configuration
+│   ├── static/                 ✅ Static files directory
+│   │   └── (images will be served from Railway volume)
+│   ├── templates/              ✅ Flask templates
+│   └── routes/                 ✅ All route files
+│       ├── admin.py
+│       ├── user.py
+│       ├── contact.py
+│       ├── backup_system.py
+│       └── (all other route files)
+└── frontend/                   ✅ React frontend
+    ├── package.json            ✅ Node.js dependencies
+    ├── vite.config.js          ✅ Build configuration
+    ├── index.html              ✅ HTML template
+    ├── src/                    ✅ React source
+    │   ├── main.jsx            ✅ React entry point
+    │   ├── App.jsx             ✅ Main React component
+    │   ├── components/         ✅ React components
+    │   └── pages/              ✅ React pages
+    │       ├── ContactPage.jsx ✅ (with correct budget dropdown)
+    │       ├── PortfolioPage.jsx ✅ (with test title)
+    │       └── (all other pages)
+    └── public/                 ✅ Public assets
+
+CRITICAL: Make sure the file structure matches EXACTLY as shown above.
+The Railway deployment depends on this specific structure.
+
+IMPORTANT FILES INCLUDED:
+- src/ (Flask backend with all routes)
+- frontend/ (React frontend with latest changes)  
+- requirements.txt (Python dependencies)
+- package.json (Node.js dependencies)
+- nixpacks.toml (Railway build config)
+- mindseye.db (database with all data)
+- wsgi.py (WSGI entry point)
+
+EXCLUDED:
+- src/static/assets/ (images - served from Railway volume)
+- frontend/dist/ (build files - Railway will build)
+- frontend/node_modules/ (dependencies - Railway will install)
+- .git/ (version control - new repo will have its own)
+
+This backup contains everything needed to restore the complete
+application to a new repository and Railway deployment.

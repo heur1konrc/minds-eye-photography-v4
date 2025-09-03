@@ -315,7 +315,7 @@ Reply directly to this email to respond to the client.
             }
             
             email_payload = {
-                "from": "rick@themindseyestudio.com",  # Must match Resend account
+                "from": "onboarding@resend.dev",  # Resend's verified sender
                 "to": ["info@themindseyestudio.com"],
                 "subject": subject,
                 "text": body

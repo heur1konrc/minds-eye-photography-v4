@@ -302,7 +302,7 @@ Reply directly to this email to respond to the client.
             smtp_port = 587
             smtp_login = "rick@rickcorey.com"
             smtp_password = "ztht nmbi ytjg mzij"
-            sender_email = "info@themindseyestudio.com"
+            sender_email = "rick@rickcorey.com"  # Must match login for Gmail
             recipient_email = "rick@themindseyestudio.com"
             
             # Create message

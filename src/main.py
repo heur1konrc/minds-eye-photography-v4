@@ -845,6 +845,86 @@ def serve(path):
             return "index.html not found", 404
 
 
+# Simple email contact route
+@app.route('/api/send-email', methods=['POST'])
+def send_contact_email():
+    """Send contact form email using Gmail SMTP"""
+    try:
+        import smtplib
+        from email.mime.text import MIMEText
+        from email.mime.multipart import MIMEMultipart
+        
+        data = request.get_json()
+        if not data:
+            return jsonify({'success': False, 'error': 'No data provided'}), 400
+            
+        # Extract form data
+        name = data.get('name', '')
+        email = data.get('email', '')
+        phone = data.get('phone', 'Not provided')
+        event_date = data.get('eventDate', 'Not provided')
+        photography_type = data.get('photographyType', 'Not specified')
+        budget = data.get('budget', 'Not specified')
+        hear_about = data.get('hearAbout', 'Not specified')
+        message = data.get('message', '')
+        
+        if not name or not email or not message:
+            return jsonify({'success': False, 'error': 'Name, email, and message are required'}), 400
+        
+        # Gmail SMTP configuration
+        smtp_server = "smtp.gmail.com"
+        smtp_port = 587
+        sender_email = "rick@rickcorey.com"
+        sender_password = "ztht nmbi ytjg mzij"
+        recipient_email = "info@themindseyestudio.com"
+        
+        # Create email content
+        email_body = f"""
+New photography inquiry received:
+
+Name: {name}
+Email: {email}
+Phone: {phone}
+Event Date: {event_date}
+Photography Type: {photography_type}
+Budget Range: {budget}
+How they heard about us: {hear_about}
+
+Message:
+{message}
+
+---
+Reply directly to this email to respond to the client.
+        """
+        
+        # Create email message
+        msg = MIMEMultipart()
+        msg['From'] = sender_email
+        msg['To'] = recipient_email
+        msg['Reply-To'] = email
+        msg['Subject'] = f"New contact form submission from {name}"
+        msg.attach(MIMEText(email_body, 'plain'))
+        
+        # Send email
+        server = smtplib.SMTP(smtp_server, smtp_port)
+        server.starttls()
+        server.login(sender_email, sender_password)
+        server.send_message(msg)
+        server.quit()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Thank you for your inquiry! Rick will get back to you soon.'
+        })
+        
+    except Exception as e:
+        print(f"Email error: {str(e)}")
+        return jsonify({
+            'success': False,
+            'error': 'Failed to send email. Please contact info@themindseyestudio.com directly.'
+        }), 500
+
+
 if __name__ == '__main__':
     import os
     port = int(os.environ.get('PORT', 5000))

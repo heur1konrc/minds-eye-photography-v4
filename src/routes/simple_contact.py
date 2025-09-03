@@ -300,8 +300,8 @@ Reply directly to this email to respond to the client.
             # SMTP configuration
             smtp_server = "smtp.gmail.com"
             smtp_port = 587
-            smtp_login = "rick@themindseyestudio.com"
-            smtp_password = "dvke joyj ydge qcma"
+            smtp_login = "rick@rickcorey.com"
+            smtp_password = "ztht nmbi ytjg mzij"
             sender_email = "info@themindseyestudio.com"
             recipient_email = "rick@themindseyestudio.com"
             

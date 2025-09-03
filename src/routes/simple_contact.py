@@ -306,38 +306,40 @@ Submitted on: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
 Reply directly to this email to respond to the client.
         """
         
-        # Send email using Resend API (Railway's recommended approach)
+        # Send email using standard SMTP with Gmail App Password
         try:
-            resend_url = "https://api.resend.com/emails"
-            headers = {
-                "Authorization": "Bearer re_PPE8BC23_8JWToUtMTfd9FdHdExfZ7gwj",
-                "Content-Type": "application/json"
-            }
+            import smtplib
+            from email.mime.text import MIMEText
+            from email.mime.multipart import MIMEMultipart
             
-            email_payload = {
-                "from": "Mind's Eye Photography <onboarding@resend.dev>",  # Correct Resend format
-                "to": ["info@themindseyestudio.com"],
-                "subject": subject,
-                "text": body
-            }
+            # Gmail SMTP configuration
+            smtp_server = "smtp.gmail.com"
+            smtp_port = 587
+            smtp_username = "rick@rickcorey.com"
+            smtp_password = "ztht nmbi ytjg mzij"
             
-            response = requests.post(resend_url, headers=headers, json=email_payload)
+            # Create message
+            msg = MIMEMultipart()
+            msg['From'] = smtp_username
+            msg['To'] = "info@themindseyestudio.com"
+            msg['Subject'] = subject
+            msg.attach(MIMEText(body, 'plain'))
             
-            if response.status_code == 200:
-                logger.info(f"Email sent successfully via Resend for inquiry from {name} ({email})")
-                return jsonify({
-                    'success': True, 
-                    'message': 'Thank you for your inquiry! Rick will get back to you soon.'
-                }), 200
-            else:
-                logger.error(f"Resend API error: {response.status_code} - {response.text}")
-                return jsonify({
-                    'success': False, 
-                    'error': f'Email service error. Please contact info@themindseyestudio.com directly.'
-                }), 500
-                
+            # Send email
+            server = smtplib.SMTP(smtp_server, smtp_port)
+            server.starttls()
+            server.login(smtp_username, smtp_password)
+            server.send_message(msg)
+            server.quit()
+            
+            logger.info(f"Email sent successfully via Gmail SMTP for inquiry from {name} ({email})")
+            return jsonify({
+                'success': True, 
+                'message': 'Thank you for your inquiry! Rick will get back to you soon.'
+            }), 200
+            
         except Exception as email_error:
-            logger.error(f"Failed to send email via Resend: {str(email_error)}")
+            logger.error(f"Failed to send email via Gmail SMTP: {str(email_error)}")
             return jsonify({
                 'success': False, 
                 'error': f'Failed to send email. Please contact info@themindseyestudio.com directly.'

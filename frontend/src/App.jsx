@@ -29,7 +29,7 @@ function App() {
         <Navigation />
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/portfolio" element={<WorkingPortfolio />} />
+          <Route path="/portfolio" element={<WorkingPortfolio key={window.location.pathname} />} />
           <Route path="/simple" element={<SimplePortfolio />} />
           <Route path="/working" element={<WorkingPortfolio />} />
           <Route path="/sql" element={<SQLPortfolio />} />

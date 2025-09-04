@@ -18,6 +18,38 @@ const WorkingPortfolio = () => {
     setCurrentPage(page)
   }, [])
 
+  // Force initial load on component mount
+  useEffect(() => {
+    console.log('WorkingPortfolio component mounted, forcing initial load...')
+    const fetchImages = async () => {
+      try {
+        setLoading(true)
+        console.log('Force fetching portfolio images...')
+        const response = await fetch('/api/simple-portfolio?t=' + Date.now()) // Add timestamp to prevent caching
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
+        }
+        const data = await response.json()
+        console.log('Portfolio data loaded:', data)
+        
+        // Process the data to ensure correct image URLs
+        const portfolioImages = data.map(img => ({
+          ...img,
+          url: img.url || `/data/${img.filename}`
+        }))
+        
+        setImages(portfolioImages)
+      } catch (error) {
+        console.error('Error loading portfolio:', error)
+        setImages([])
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchImages()
+  }, []) // Run only on mount
+
   // Fetch images from API - trigger on location change
   useEffect(() => {
     const fetchImages = async () => {
@@ -47,7 +79,7 @@ const WorkingPortfolio = () => {
     }
 
     fetchImages()
-  }, [location.pathname]) // Re-fetch when route changes
+  }, [location.pathname, location.search, location.hash]) // Re-fetch when any part of location changes
 
   // Get unique categories
   const categories = ['All Work', ...new Set(images.flatMap(img => img.categories || []))]

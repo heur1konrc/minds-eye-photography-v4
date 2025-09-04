@@ -311,6 +311,75 @@ def get_slideshow_images():
         print(f"❌ Error in slideshow-images API: {e}")
         return jsonify({'success': False, 'images': []}), 200
 
+@app.route('/api/portfolio')
+def get_portfolio():
+    """Main portfolio endpoint that the frontend expects"""
+    try:
+        print("🔍 Portfolio API called")
+        
+        # Get all images from admin database (excluding About images)
+        all_images = Image.query.filter(Image.is_about != True).all()
+        print(f"📊 Found {len(all_images)} portfolio images in database (excluding About images)")
+        
+        portfolio_data = []
+        
+        for image in all_images:
+            print(f"📷 Processing image: {image.filename}")
+            try:
+                # Get actual categories for this image
+                image_categories = []
+                try:
+                    image_categories = [cat.category.name for cat in image.categories]
+                except Exception as cat_error:
+                    print(f"Category error for image {image.id}: {cat_error}")
+                    image_categories = ['Miscellaneous']
+                
+                # If no categories assigned, use Miscellaneous
+                if not image_categories:
+                    image_categories = ['Miscellaneous']
+                
+                # Create portfolio item with React-expected format
+                portfolio_item = {
+                    'id': str(image.id),
+                    'title': image.title or f"Image {image.id}",
+                    'description': image.description or "",
+                    'filename': image.filename,
+                    'url': f"/data/{image.filename}",  # Use /data route for serving images
+                    'categories': image_categories,
+                    'metadata': {
+                        'created_at': image.upload_date.isoformat() if image.upload_date else None
+                    }
+                }
+                portfolio_data.append(portfolio_item)
+                print(f"✅ Added image: {portfolio_item['filename']}")
+                
+            except Exception as img_error:
+                print(f"⚠️ Error processing image {image.id}: {img_error}")
+                continue
+        
+        print(f"✅ Returning {len(portfolio_data)} portfolio items")
+        
+        # Create response with CORS headers
+        response = jsonify(portfolio_data)
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+        response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+        
+        return response
+        
+    except Exception as e:
+        print(f"❌ Error in portfolio API: {e}")
+        import traceback
+        print(f"Portfolio API TRACEBACK: {traceback.format_exc()}")
+        
+        # Return empty array with CORS headers on error
+        response = jsonify([])
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+        response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+        
+        return response, 500
+
 @app.route('/api/simple-portfolio')
 def get_simple_portfolio():
     """Bulletproof portfolio endpoint - always returns admin data"""

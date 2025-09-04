@@ -395,6 +395,18 @@ def get_simple_portfolio():
         for image in all_images:
             print(f"📷 Processing image: {image.filename}")
             try:
+                # Get actual categories for this image
+                image_categories = []
+                try:
+                    image_categories = [cat.category.name for cat in image.categories]
+                except Exception as cat_error:
+                    print(f"Category error for image {image.id}: {cat_error}")
+                    image_categories = ['Miscellaneous']
+                
+                # If no categories assigned, use Miscellaneous
+                if not image_categories:
+                    image_categories = ['Miscellaneous']
+                
                 # Create portfolio item with error handling for each field
                 portfolio_item = {
                     'id': str(image.id) if image.id else 'unknown',
@@ -402,13 +414,13 @@ def get_simple_portfolio():
                     'description': image.description if image.description else "",
                     'filename': image.filename if image.filename else "unknown.jpg",
                     'image': image.filename if image.filename else "unknown.jpg",
-                    'categories': ['Photography'],  # Simple default
+                    'categories': image_categories,  # Use actual categories from database
                     'metadata': {
                         'created_at': image.created_at.isoformat() if hasattr(image, 'created_at') and image.created_at else None
                     }
                 }
                 portfolio_data.append(portfolio_item)
-                print(f"✅ Added image: {portfolio_item['filename']}")
+                print(f"✅ Added image: {portfolio_item['filename']} with categories: {image_categories}")
             except Exception as img_error:
                 print(f"⚠️ Error processing image {image.id}: {img_error}")
                 continue

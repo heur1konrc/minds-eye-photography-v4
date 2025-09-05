@@ -26,6 +26,7 @@ from src.routes.og_image import og_bp
 from src.routes.cleanup_api import cleanup_bp
 from src.routes.slideshow_api import slideshow_api_bp  # Simple slideshow API (Option 1)
 from src.routes.enhanced_background import enhanced_bg_bp
+from src.api_endpoints import api_bp
 # from src.routes.slideshow_manager import slideshow_bp as slideshow_manager_bp  # Temporarily disabled for deployment fix
 # from src.routes.contact_form import contact_bp  # Temporarily disabled
 
@@ -57,6 +58,7 @@ app.register_blueprint(cleanup_bp)
 
 app.register_blueprint(slideshow_api_bp)  # Simple slideshow API (Option 1)
 app.register_blueprint(enhanced_bg_bp)
+app.register_blueprint(api_bp)  # Frontend API endpoints
 # Import and register the slideshow fix blueprint
 from src.routes.slideshow_fix import slideshow_fix_bp
 app.register_blueprint(slideshow_fix_bp)  # New slideshow fix

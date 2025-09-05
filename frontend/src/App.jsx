@@ -2,7 +2,7 @@ import React from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import Navigation from './components/Navigation'
-import HomePage from './pages/HomePage'
+import SimpleHomePage from './pages/SimpleHomePage'
 import FreshPortfolio from './pages/FreshPortfolio'
 import FeaturedPage from './pages/FeaturedPage'
 import AboutMindsEye from './pages/AboutMindsEye'
@@ -17,7 +17,7 @@ function App() {
         <CopyrightProtection />
         <Navigation />
         <Routes>
-          <Route path="/" element={<HomePage />} />
+          <Route path="/" element={<SimpleHomePage />} />
           <Route path="/portfolio" element={<FreshPortfolio />} />
           <Route path="/featured" element={<FeaturedPage />} />
           <Route path="/info" element={<AboutMindsEye />} />

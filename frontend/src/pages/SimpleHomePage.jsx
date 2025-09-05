@@ -10,7 +10,7 @@ const SimpleHomePage = () => {
       .then(response => response.json())
       .then(data => {
         if (data && data.background_image) {
-          setBackgroundImage(`/static/assets/${data.background_image}`)
+          setBackgroundImage(`/data/${data.background_image}`)
         }
       })
       .catch(error => {

@@ -10,7 +10,7 @@ from src.config import PHOTOGRAPHY_ASSETS_DIR
 
 api_bp = Blueprint('api', __name__)
 
-@api_bp.route('/api/background-image', methods=['GET'])
+@api_bp.route('/background-image', methods=['GET'])
 def get_background_image():
     """Get the current background image for the homepage"""
     try:
@@ -33,7 +33,7 @@ def get_background_image():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@api_bp.route('/api/portfolio', methods=['GET'])
+@api_bp.route('/portfolio', methods=['GET'])
 def get_portfolio_images():
     """Get portfolio images with pagination"""
     try:
@@ -76,7 +76,7 @@ def get_portfolio_images():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@api_bp.route('/api/categories', methods=['GET'])
+@api_bp.route('/categories', methods=['GET'])
 def get_categories():
     """Get all available categories"""
     try:
@@ -88,7 +88,7 @@ def get_categories():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@api_bp.route('/api/about-content', methods=['GET'])
+@api_bp.route('/about-content', methods=['GET'])
 def get_about_content():
     """Get about page content"""
     try:
@@ -107,7 +107,7 @@ def get_about_content():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@api_bp.route('/api/about-image', methods=['GET'])
+@api_bp.route('/about-image', methods=['GET'])
 def get_about_image():
     """Get about page image"""
     try:

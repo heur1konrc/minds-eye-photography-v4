@@ -58,7 +58,7 @@ app.register_blueprint(cleanup_bp)
 
 app.register_blueprint(slideshow_api_bp)  # Simple slideshow API (Option 1)
 app.register_blueprint(enhanced_bg_bp)
-app.register_blueprint(api_bp)  # Frontend API endpoints
+app.register_blueprint(api_bp, url_prefix='/api')  # Frontend API endpoints
 # Import and register the slideshow fix blueprint
 from src.routes.slideshow_fix import slideshow_fix_bp
 app.register_blueprint(slideshow_fix_bp)  # New slideshow fix

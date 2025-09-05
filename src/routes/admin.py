@@ -801,6 +801,7 @@ dashboard_html = '''
     <div class="admin-links">
         <a href="/admin">🖼️ Portfolio Management</a>
         <a href="/admin/featured-image">⭐ Featured Image</a>
+        <a href="/admin/background">🎨 Background Manager</a>
         <a href="/admin/about-management">📖 About Page Management</a>
         <a href="/admin/category-management">🏷️ Category Management</a>
         <a href="/admin/backup-system">🛡️ Backup System</a>

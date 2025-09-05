@@ -1,27 +1,20 @@
 import React from 'react'
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import Navigation from './components/Navigation'
-import SimpleHomePage from './pages/SimpleHomePage'
-import FreshPortfolio from './pages/FreshPortfolio'
-import FeaturedPage from './pages/FeaturedPage'
-import AboutMindsEye from './pages/AboutMindsEye'
-import ContactPage from './pages/ContactPage'
-import CopyrightProtection from './components/CopyrightProtection'
+import HomePage from './pages/HomePage'
+import Portfolio from './pages/Portfolio'
+import Info from './pages/Info'
 import './App.css'
 
 function App() {
   return (
     <Router>
       <div className="min-h-screen bg-gray-50">
-        <CopyrightProtection />
         <Navigation />
         <Routes>
-          <Route path="/" element={<SimpleHomePage />} />
-          <Route path="/portfolio" element={<FreshPortfolio />} />
-          <Route path="/featured" element={<FeaturedPage />} />
-          <Route path="/info" element={<AboutMindsEye />} />
-          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/" element={<HomePage />} />
+          <Route path="/portfolio" element={<Portfolio />} />
+          <Route path="/info" element={<Info />} />
         </Routes>
       </div>
     </Router>
@@ -29,3 +22,4 @@ function App() {
 }
 
 export default App
+

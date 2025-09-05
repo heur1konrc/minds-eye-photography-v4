@@ -18,13 +18,30 @@ const HomePage = () => {
   useEffect(() => {
     const fetchSlideshowData = async () => {
       try {
-        // Create logo slide as permanent first slide
-        const logoSlide = {
-          id: 'logo-slide',
-          filename: 'logo-slide.png',
-          title: "Mind's Eye Photography",
-          url: '/logo-slide.png'
-        };
+        // Fetch background image from Background Manager
+        const backgroundResponse = await fetch('/api/background');
+        const backgroundData = await backgroundResponse.json();
+        
+        console.log('Background API response:', backgroundData);
+        
+        // Create background slide (Slide 0) from Background Manager selection
+        let backgroundSlide;
+        if (backgroundData && backgroundData.filename) {
+          backgroundSlide = {
+            id: 'background-slide',
+            filename: backgroundData.filename,
+            title: backgroundData.title || "Mind's Eye Photography",
+            url: `/static/assets/${backgroundData.filename}`
+          };
+        } else {
+          // Fallback to logo slide if no background set
+          backgroundSlide = {
+            id: 'logo-slide',
+            filename: 'logo-slide.png',
+            title: "Mind's Eye Photography",
+            url: '/logo-slide.png'
+          };
+        }
 
         // Fetch slideshow images from slideshow-specific API (only toggled images)
         const slideshowResponse = await fetch('/api/slideshow');
@@ -41,20 +58,20 @@ const HomePage = () => {
             url: `/data/${image.filename}`  // Use /data path for persistent storage
           }));
           
-          // Combine logo slide + slideshow-marked images
-          const allSlides = [logoSlide, ...adminSlides];
+          // Combine background slide + slideshow-marked images
+          const allSlides = [backgroundSlide, ...adminSlides];
           setSlideshowImages(allSlides);
-          console.log('✅ Slideshow with marked images loaded:', allSlides.length, 'slides');
+          console.log('✅ Slideshow with background + marked images loaded:', allSlides.length, 'slides');
         } else {
-          // Just logo slide if no slideshow images marked
-          setSlideshowImages([logoSlide]);
+          // Just background slide if no slideshow images marked
+          setSlideshowImages([backgroundSlide]);
           console.log('📝 Using logo slide only - no images marked for slideshow');
         }
         
         setLoading(false);
       } catch (error) {
         console.error('❌ Error fetching slideshow data:', error);
-        // Fallback to just logo slide on error
+        // Fallback to logo slide on error
         setSlideshowImages([{
           id: 'logo-slide',
           filename: 'logo-slide.png',

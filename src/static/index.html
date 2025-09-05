@@ -70,6 +70,29 @@
       // Watch for DOM changes
       const observer = new MutationObserver(fixNavigation);
       observer.observe(document.body, { childList: true, subtree: true });
+      
+      // Background image functionality
+      function setBackgroundImage() {
+        fetch('/api/background')
+          .then(response => response.json())
+          .then(data => {
+            console.log('Background API response:', data);
+            if (data && data.background_image) {
+              const imageUrl = `/data/${data.background_image}`;
+              console.log('Setting background to:', imageUrl);
+              document.body.style.backgroundImage = `url('${imageUrl}')`;
+              document.body.style.backgroundSize = 'cover';
+              document.body.style.backgroundPosition = 'center';
+              document.body.style.backgroundRepeat = 'no-repeat';
+            }
+          })
+          .catch(error => console.error('Background fetch error:', error));
+      }
+      
+      // Set background immediately and after page loads
+      setBackgroundImage();
+      document.addEventListener('DOMContentLoaded', setBackgroundImage);
+      window.addEventListener('load', setBackgroundImage);
     </script>
   </body>
 </html>
